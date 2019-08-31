@@ -1,4 +1,11 @@
+const { sign } = require('../authentication');
 
-export function login(req, res) {
-	res.send('Login success on ' + req.body.email);
+export async function login(req, res) {
+	try {
+		let token = await sign(req.body.email);
+		res.status(200).send(token);
+	}
+	catch (error) {
+		res.status(401).send(error);
+	}
 }
