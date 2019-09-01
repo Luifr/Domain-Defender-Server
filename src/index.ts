@@ -7,6 +7,8 @@ import router from './routes/index';
 
 app.use(express.urlencoded({ extended: false }));
 
+app.use(require('./authentication').verifyToken)
+
 app.use('/', router);
 
 app.listen(port, () => { console.log(`🚀  listening on port ${port}!`); });

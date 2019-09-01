@@ -8,6 +8,12 @@ const privateKey = isLocal ? "80d6cf3a8bc62ab2a1ae2d054a373caa810a462ee83740" : 
 let playerRef = firestore.collection('players');
 
 module.exports.verifyToken = function verifyToken(req, res, next) {
+
+	if (req.url == "/login") {
+		next();
+		return;
+	}
+
 	const token = req.headers["authorization"];
 	if (!token)
 		res.status(403).send("Token is required");

@@ -1,41 +1,28 @@
-import firestore from "../../dbManager";
-
-let playerRef = firestore.collection('players');
+import * as Player from '../../model/player';
 
 export async function saveHighScore(req, res) {
 	let email = req.body.email;
-	let score = req.body.score;
-
-	let playerDoc = playerRef.doc(email);
-	let doc = await playerDoc.get();
-	if (doc.exists) {
-		let playerData = doc.data() as FirebaseFirestore.DocumentData;
-		if (!playerData.highScore || score > playerData.highScore) {
-			playerDoc.set({ highScore: score }, { merge: true });
-			res.send("Score saved");
-			return;
-		}
-		res.send("Not a highscore");
+	let money = parseInt(req.body.money);
+	let score = parseInt(req.body.score);
+	if (!score && !money) {
+		res.send("Score or money is required");
 		return;
 	}
-	playerDoc.set({ email, highScore: score }, { merge: true });
-	res.send("New player");
+	let player = await Player.get(email);
+	if (score && score > player.highScore) {
+		player.highScore = score;
+	}
+	if (money) {
+		player.money += money;
+	}
+	Player.save(email, player);
+	res.send("Player updated");
+	return;
 }
 
-export async function getHighScore(req, res) {
-	let email = req.query.email;
 
-	let playerDoc = playerRef.doc(email);
-	let doc = await playerDoc.get();
-	if (doc.exists) {
-		let playerData = doc.data() as FirebaseFirestore.DocumentData;
-		if (playerData.highScore) {
-			res.send("Player highscore is " + playerData.highScore);
-		}
-		else {
-			res.send("Player doesn't have a highscore");
-		}
-		return;
-	}
-	res.send("Player not found");
+export async function getHighScore(req, res) {
+	let email = req.user.email;
+	let player = await Player.get(email);
+	res.send("Player highscore is " + player.highScore);
 }
