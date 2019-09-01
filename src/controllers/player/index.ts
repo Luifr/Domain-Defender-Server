@@ -1,11 +1,11 @@
 import * as Player from '../../model/player';
 
-export async function saveHighScore(req, res) {
-	let email = req.body.email;
+export async function savePlayer(req, res) {
+	let email = req.user.email;
 	let money = parseInt(req.body.money);
 	let score = parseInt(req.body.score);
 	if (!score && !money) {
-		res.send("Score or money is required");
+		res.status(400).send("Score or money is required");
 		return;
 	}
 	let player = await Player.get(email);
@@ -16,13 +16,22 @@ export async function saveHighScore(req, res) {
 		player.money += money;
 	}
 	Player.save(email, player);
-	res.send("Player updated");
+	res.json(player);
 	return;
 }
 
 
-export async function getHighScore(req, res) {
+export async function getPlayer(req, res) {
 	let email = req.user.email;
 	let player = await Player.get(email);
-	res.send("Player highscore is " + player.highScore);
+	res.json(player);
+}
+
+export async function buyUpgrade(req, res) {
+	try {
+		res.json(Player.buyUpgrade(req.user.email, req.body.upgrade));
+	}
+	catch (error) {
+		res.status(400).send(error);
+	}
 }

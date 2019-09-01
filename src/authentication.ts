@@ -1,11 +1,10 @@
 const jwt = require("jsonwebtoken");
 const cryptoGen = require("crypto");
-import firestore from './dbManager';
+import * as Player from './model/player'
 
 const isLocal = process.env.NODE_ENV !== "production";
 const privateKey = isLocal ? "80d6cf3a8bc62ab2a1ae2d054a373caa810a462ee83740" : cryptoGen.randomBytes(64).toString("hex");
 
-let playerRef = firestore.collection('players');
 
 module.exports.verifyToken = function verifyToken(req, res, next) {
 
@@ -47,6 +46,8 @@ module.exports.sign = async function sign(email) {
 	}
 };
 
-function updateLoginTimestamp(email) {
-	playerRef.doc(email).set({ lastLogin: Date.now() }, { merge: true });
+async function updateLoginTimestamp(email) {
+	let player = await Player.get(email);
+	player.lastLogin = Date.now();
+	Player.save(email, player);
 }
