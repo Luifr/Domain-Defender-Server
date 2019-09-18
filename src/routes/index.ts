@@ -1,9 +1,14 @@
 import express from 'express';
 const router = express.Router();
 
-router.use('/login', require('./login'));
-router.use('/player', require('./player/index'));
-router.use('/team', require('./team'));
+import login from './login';
+import player from './player';
+import team from './team';
+
+
+router.use('/login', login);
+router.use('/player', player);
+router.use('/team', team);
 
 
 export default router;

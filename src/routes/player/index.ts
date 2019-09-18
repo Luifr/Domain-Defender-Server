@@ -9,7 +9,5 @@ router.get('/', controller.getPlayer);
 
 router.post('/upgrade', controller.buyUpgrade);
 
-module.exports = router;
 
-
-module.exports = router;
+export default router;

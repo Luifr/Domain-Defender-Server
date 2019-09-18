@@ -1,7 +1,8 @@
-const { sign } = require('../authentication');
+import { sign } from '../authentication';
 
 export async function login(req, res) {
 	try {
+		console.log(req.body.email);
 		let token = await sign(req.body.email);
 		res.status(200).send(token);
 	}

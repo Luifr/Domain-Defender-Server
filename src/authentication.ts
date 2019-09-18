@@ -1,13 +1,12 @@
-const jwt = require("jsonwebtoken");
-const cryptoGen = require("crypto");
+import jwt from "jsonwebtoken";
+import cryptoGen from "crypto";
 import * as Player from './model/player'
 
 const isLocal = process.env.NODE_ENV !== "production";
 const privateKey = isLocal ? "80d6cf3a8bc62ab2a1ae2d054a373caa810a462ee83740" : cryptoGen.randomBytes(64).toString("hex");
 
 
-module.exports.verifyToken = function verifyToken(req, res, next) {
-
+export let verifyToken = function verifyToken(req, res, next) {
 	if (req.url == "/login") {
 		next();
 		return;
@@ -17,19 +16,20 @@ module.exports.verifyToken = function verifyToken(req, res, next) {
 	if (!token)
 		res.status(403).send("Token is required");
 	else {
-		jwt.verify(token, privateKey, (err, authData) => {
+		jwt.verify(token, privateKey, async (err, authData) => {
 			if (err) {
 				res.status(403).send("Authentication problem");
 				return;
 			}
 			// req.otherData = authData.otherData
-			req.user = authData.user;
+
+			req.user = await Player.get(authData.user.email);
 			next();
 		});
 	}
 };
 
-module.exports.sign = async function sign(email) {
+export let sign = async function sign(email) {
 	if (!email)
 		throw "Email is required";
 

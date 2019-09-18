@@ -1,4 +1,5 @@
 import * as Player from '../../model/player';
+import * as Team from '../../model/team';
 
 export async function savePlayer(req, res) {
 	let email = req.user.email;
@@ -10,6 +11,9 @@ export async function savePlayer(req, res) {
 	}
 	let player = await Player.get(email);
 	if (score && score > player.highScore) {
+		let increase = score - player.highScore;
+		let team = await Team.get(player.team)
+		Team.save(player.team, { score: team.score + increase });
 		player.highScore = score;
 	}
 	if (money) {

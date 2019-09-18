@@ -25,7 +25,7 @@ export async function get(email: string): Promise<IPlayer> {
 		return playerDoc.data() as IPlayer;
 	}
 	else {
-		return { email, highScore: 0, money: 0, upgradeLevel: [0, 0, 0, 0, 0, 0], team: Math.ceil(Math.random() * 3) };
+		return { email, highScore: 0, money: 0, upgradeLevel: [0, 0, 0, 0, 0, 0], team: Math.ceil(Math.random() * 3) }; // TOFIX TOCHANGE nao gerar time aleatorio
 	}
 }
 
@@ -45,7 +45,7 @@ export async function getAll(team: Team): Promise<IPlayer[]> {
 }
 
 export async function buyUpgrade(email: string, upgradeIndex: number): Promise<any> {
-	if (upgradeIndex > 6 || upgradeIndex < 0)
+	if (upgradeIndex > 5 || upgradeIndex < 0)
 		throw "Invalid index";
 	let player = await get(email);
 	let upgrade = await upgradesRef.doc(upgradeIndex.toString()).get();

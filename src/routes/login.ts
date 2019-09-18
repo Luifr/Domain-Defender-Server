@@ -6,4 +6,4 @@ import * as controller from '../controllers/login';
 router.post('/', controller.login);
 
 
-module.exports = router;
+export default router;
