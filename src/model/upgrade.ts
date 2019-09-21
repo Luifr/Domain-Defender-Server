@@ -7,6 +7,11 @@ export interface IUpgrade {
 
 let upgradeRef = firebase.collection('upgradeCost');
 
+export async function getAll(): Promise<IUpgrade[]> {
+	let docs = await upgradeRef.get();
+	return docs.docs.map(doc => doc.data() as IUpgrade);
+}
+
 export async function get(upgrade: string): Promise<IUpgrade> {
 	if (+upgrade < 0 || +upgrade > 5)
 		throw "Upgrade does not exists";
