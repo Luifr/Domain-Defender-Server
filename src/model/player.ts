@@ -44,15 +44,15 @@ export async function getAll(team: Team): Promise<IPlayer[]> {
 	return players;
 }
 
-export async function buyUpgrade(email: string, upgradeIndex: number): Promise<any> {
-	if (upgradeIndex > 5 || upgradeIndex < 0)
+export async function buyUpgrade(email: string, upgradeIndex: string): Promise<any> {
+	if (+upgradeIndex > 5 || +upgradeIndex < 0)
 		throw "Invalid index";
 	let player = await get(email);
-	let upgrade = await upgradesRef.doc(upgradeIndex.toString()).get();
-	let upgradeCost = upgrade[player.upgradeLevel[upgradeIndex]];
+	let upgrade = (await upgradesRef.doc(upgradeIndex).get()).data() as any;
+	let upgradeCost = upgrade.Cost[player.upgradeLevel[+upgradeIndex]];
 	if (player.money >= upgradeCost) {
 		player.money -= upgradeCost;
-		player.upgradeLevel[upgradeIndex]++;
+		player.upgradeLevel[+upgradeIndex]++;
 		save(email, player);
 		return player;
 	}

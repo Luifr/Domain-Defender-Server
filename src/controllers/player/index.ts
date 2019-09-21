@@ -33,7 +33,7 @@ export async function getPlayer(req, res) {
 
 export async function buyUpgrade(req, res) {
 	try {
-		res.json(Player.buyUpgrade(req.user.email, req.body.upgrade));
+		res.json(await Player.buyUpgrade(req.user.email, req.body.upgrade));
 	}
 	catch (error) {
 		res.status(400).send(error);

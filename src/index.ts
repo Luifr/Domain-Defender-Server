@@ -10,7 +10,7 @@ import router from './routes/index';
 app.use(express.urlencoded({ extended: false }));
 
 
-app.use(verifyToken)
+app.use(verifyToken);
 
 app.use('/', router);
 
