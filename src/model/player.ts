@@ -1,59 +1,64 @@
 import firebase from '../dbManager';
-
-enum Team {
-	A,
-	B,
-	C,
-	D
-}
+import * as Upgrade from '../model/upgrade';
+import bcrypt from 'bcrypt';
 
 export interface IPlayer {
-	email: string;
+	username: string;
 	highScore: number;
-	lastLogin?: number;
+	lastLogin: number;
 	money: number;
-	team: Team
 	upgradeLevel: [number, number, number, number, number, number];
 }
 
 let playersRef = firebase.collection('players');
-let upgradesRef = firebase.collection('upgradeCost');
 
-export async function get(email: string): Promise<IPlayer> {
-	let playerDoc = await playersRef.doc(email).get();
+export async function get(username: string, password?: string): Promise<IPlayer | undefined> {
+	let playerDoc = await playersRef.doc(username).get();
 	if (playerDoc.exists) {
-		return playerDoc.data() as IPlayer;
+		let player: IPlayer = playerDoc.data() as IPlayer;
+		let hashedPassword = (player as any).password;
+		delete (player as any).password;
+		if (password) {
+			if (await bcrypt.compare(password, hashedPassword)) {
+				return player;
+			}
+			else {
+				throw ("Invalid username and password combination");
+			}
+		}
+		else {
+			return player;
+		}
 	}
 	else {
-		return { email, highScore: 0, money: 0, upgradeLevel: [0, 0, 0, 0, 0, 0], team: Math.ceil(Math.random() * 3) }; // TOFIX TOCHANGE nao gerar time aleatorio
+		//return { username, highScore: 0, money: 0, upgradeLevel: [0, 0, 0, 0, 0, 0]}; // TOFIX TOCHANGE nao gerar time aleatorio
+		return undefined;
 	}
 }
 
-export async function save(email: string, player: Partial<IPlayer>): Promise<any> {
-	playersRef.doc(email).set(player, { merge: true });
+export async function save(username: string, player: Partial<IPlayer>): Promise<any> {
+	playersRef.doc(username).set(player, { merge: true });
 }
 
-export async function getAll(team: Team): Promise<IPlayer[]> {
+export async function getAll(): Promise<IPlayer[]> {
 	let playerDocs = await playersRef.get();
 	let players: IPlayer[] = [];
 	for (let doc of playerDocs.docs) {
 		let player = doc.data() as IPlayer;
-		if (player.team == team)
-			players.push(player);
+		players.push(player);
 	}
 	return players;
 }
 
-export async function buyUpgrade(email: string, upgradeIndex: string): Promise<any> {
+export async function buyUpgrade(player: IPlayer, upgradeIndex: string): Promise<any> {
 	if (+upgradeIndex > 5 || +upgradeIndex < 0)
 		throw "Invalid index";
-	let player = await get(email);
-	let upgrade = (await upgradesRef.doc(upgradeIndex).get()).data() as any;
-	let upgradeCost = upgrade.Cost[player.upgradeLevel[+upgradeIndex]];
+	let upgrade = await Upgrade.get(upgradeIndex);
+	let upgradeCost = upgrade.cost[player.upgradeLevel[+upgradeIndex]];
 	if (player.money >= upgradeCost) {
 		player.money -= upgradeCost;
 		player.upgradeLevel[+upgradeIndex]++;
-		save(email, player);
+		save(player.username, player);
 		return player;
 	}
 	throw "Cant buy upgrade";

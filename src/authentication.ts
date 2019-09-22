@@ -1,53 +1,65 @@
 import jwt from "jsonwebtoken";
 import cryptoGen from "crypto";
 import * as Player from './model/player'
+import bcrypt from 'bcrypt';
 
 const isLocal = process.env.NODE_ENV !== "production";
 const privateKey = isLocal ? "80d6cf3a8bc62ab2a1ae2d054a373caa810a462ee83740" : cryptoGen.randomBytes(64).toString("hex");
 
 
-export let verifyToken = function verifyToken(req, res, next) {
-	if (req.url == "/login") {
+export function verifyToken(req, res, next) {
+	if (req.url == "/login" || req.url == "/register") {
 		next();
 		return;
 	}
 
 	const token = req.headers["authorization"];
 	if (!token)
-		res.status(403).send("Token is required");
+		return res.status(403).json({ message: "Token is required" });
 	else {
 		jwt.verify(token, privateKey, async (err, authData) => {
 			if (err) {
-				res.status(403).send("Authentication problem");
+				res.status(403).json({ message: "Authentication problem" });
 				return;
 			}
 			// req.otherData = authData.otherData
 
-			req.user = await Player.get(authData.user.email);
+			req.user = await Player.get(authData.user.username);
+			if (!req.user)
+				res.status(403).json({ message: "Login problem" });
 			next();
 		});
 	}
 };
 
-export let sign = async function sign(email) {
-	if (!email)
-		throw "Email is required";
+export async function sign(username: string, password: string) {
 
-	if (true) { // TODO checar com o servidor da semcomp
-		let token = await jwt.sign({ user: { email } }, privateKey);
+	let player = await Player.get(username, password);
+	if (player) {
+		let token = await jwt.sign({ user: { username } }, privateKey);
 		if (token) {
-			updateLoginTimestamp(email);
-			return token;
+			updateLoginTimestamp(username);
+			return { token, player };
 		}
 		throw "Authentication problem";
 	}
 	else {
-		throw "Invalid email/password combination";
+		throw "Invalid username/password combination";
 	}
 };
 
-async function updateLoginTimestamp(email) {
-	let player = await Player.get(email);
+export async function register(username: string, password: string) {
+	if (await Player.get(username))
+		throw "Username already exists";
+	let hashedPassword = await bcrypt.hash(password, 10);
+	let player = { username, highScore: 0, money: 0, upgradeLevel: [0, 0, 0, 0, 0, 0], lastLogin: Date.now(), password: hashedPassword };
+	return Player.save(username, player as any);
+}
+
+async function updateLoginTimestamp(username) {
+	let player = await Player.get(username);
+	if (!player)
+		return;
 	player.lastLogin = Date.now();
-	Player.save(email, player);
+	Player.save(username, player);
 }

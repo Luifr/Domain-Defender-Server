@@ -4,7 +4,9 @@
   "description": "",
   "main": "javascript/index.js",
   "dependencies": {
+    "@types/bcrypt": "^3.0.0",
     "@types/express": "^4.17.1",
+    "bcrypt": "^3.0.6",
     "express": "^4.17.1",
     "express-list-endpoints": "^4.0.1",
     "firebase-admin": "^8.4.0",
