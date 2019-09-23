@@ -23,7 +23,7 @@ export async function get(username: string, password?: string): Promise<IPlayer 
 				return player;
 			}
 			else {
-				throw ("Invalid username and password combination");
+				throw ("Invalid username/password combination");
 			}
 		}
 		else {
@@ -37,7 +37,7 @@ export async function get(username: string, password?: string): Promise<IPlayer 
 }
 
 export async function save(username: string, player: Partial<IPlayer>): Promise<any> {
-	playersRef.doc(username).set(player, { merge: true });
+	return playersRef.doc(username).set(player, { merge: true });
 }
 
 export async function getAll(): Promise<IPlayer[]> {
