@@ -1,9 +1,11 @@
 import * as auth from '../authentication';
 import { Request, Response } from 'express';
 
-export async function login(req, res) {
-	if (!req.body.username || !req.body.password)
+export async function login(req: Request, res: Response) {
+	if (!req.body.username || !req.body.password) {
 		res.status(401).json({ message: "Username and password are required" });
+		return;
+	}
 	try {
 		let playerWithToken = await auth.sign(req.body.username, req.body.password);
 		res.status(200).json(playerWithToken);

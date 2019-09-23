@@ -11,6 +11,18 @@ export interface IPlayer {
 }
 
 let playersRef = firebase.collection('players');
+let statsRef = firebase.collection('stats');
+let highScoresDoc = statsRef.doc('highScores');
+
+let highScores: { score: number, username: string }[];
+highScoresDoc.get().then(doc => {
+	let data = doc.data() as any;
+	highScores = data.scores as any[];
+});
+
+export function getHighScores() {
+	return highScores;
+}
 
 export async function get(username: string, password?: string): Promise<IPlayer | undefined> {
 	let playerDoc = await playersRef.doc(username).get();
@@ -37,6 +49,19 @@ export async function get(username: string, password?: string): Promise<IPlayer 
 }
 
 export async function save(username: string, player: Partial<IPlayer>): Promise<any> {
+	let highScorePlayerIndex = highScores.findIndex((val) => val.username == player.username);
+	if (player.highScore && highScorePlayerIndex == -1) {
+		highScores.push({ score: player.highScore, username: player.username as string });
+		highScores.sort((a, b) => { return b.score - a.score });
+		highScores = highScores.slice(0, 20);
+		console.log(highScores);
+		highScoresDoc.set({ scores: highScores });
+	}
+	else if (player.highScore && highScorePlayerIndex !== -1) {
+		highScores[highScorePlayerIndex].score = player.highScore;
+		highScores.sort((a, b) => { return b.score - a.score });
+		highScoresDoc.set({ scores: highScores });
+	}
 	return playersRef.doc(username).set(player, { merge: true });
 }
 
@@ -61,5 +86,5 @@ export async function buyUpgrade(player: IPlayer, upgradeIndex: string): Promise
 		save(player.username, player);
 		return player;
 	}
-	throw "Cant buy upgrade";
+	throw "Not enough money";
 }

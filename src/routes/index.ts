@@ -4,10 +4,14 @@ const router = express.Router();
 import auth from './auth';
 import player from './player';
 import * as upgradeController from '../controllers/upgrade';
+import { getHighScores } from '../model/player'
 
 
 router.use('/', auth);
 router.use('/player', player);
 router.get('/upgrade', upgradeController.get);
+router.get('/highScores', (req, res) => {
+	return res.json(getHighScores());
+});
 
 export default router;
