@@ -10,8 +10,8 @@ import { getHighScores } from '../model/player'
 router.use('/', auth);
 router.use('/player', player);
 router.get('/upgrade', upgradeController.get);
-router.get('/highScores', (req, res) => {
-	return res.json(getHighScores());
+router.get('/highScores', (_, res) => {
+	return res.json({ highScores: getHighScores() });
 });
 
 export default router;
