@@ -5,6 +5,7 @@ import { getHighScores, saveHighScores } from './stats';
 
 export interface IPlayer {
 	username: string;
+	email: string;
 	highScore: number;
 	lastLogin: number;
 	money: number;
