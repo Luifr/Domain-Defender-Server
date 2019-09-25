@@ -4,7 +4,7 @@ const router = express.Router();
 import auth from './auth';
 import player from './player';
 import * as upgradeController from '../controllers/upgrade';
-import { getHighScores } from '../model/player'
+import { getHighScores } from '../model/stats'
 
 
 router.use('/', auth);

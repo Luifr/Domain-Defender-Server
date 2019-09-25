@@ -1,28 +1,18 @@
 import firebase from '../dbManager';
 import * as Upgrade from '../model/upgrade';
 import bcrypt from 'bcrypt';
+import { getHighScores, saveHighScores } from './stats';
 
 export interface IPlayer {
 	username: string;
 	highScore: number;
 	lastLogin: number;
 	money: number;
+	gamesPlayed: number;
 	upgradeLevel: [number, number, number, number, number, number];
 }
 
 let playersRef = firebase.collection('players');
-let statsRef = firebase.collection('stats');
-let highScoresDoc = statsRef.doc('highScores');
-
-let highScores: { score: number, username: string }[];
-highScoresDoc.get().then(doc => {
-	let data = doc.data() as any;
-	highScores = data.scores as any[];
-});
-
-export function getHighScores() {
-	return highScores;
-}
 
 export async function get(username: string, password?: string): Promise<IPlayer | undefined> {
 	let playerDoc = await playersRef.doc(username).get();
@@ -43,25 +33,23 @@ export async function get(username: string, password?: string): Promise<IPlayer 
 		}
 	}
 	else {
-		//return { username, highScore: 0, money: 0, upgradeLevel: [0, 0, 0, 0, 0, 0]}; // TOFIX TOCHANGE nao gerar time aleatorio
 		return undefined;
 	}
 }
 
 export async function save(username: string, player: Partial<IPlayer>): Promise<any> {
+	let highScores = getHighScores();
 	let highScorePlayerIndex = highScores.findIndex((val) => val.username == player.username);
 	if (player.highScore && highScorePlayerIndex == -1) {
 		highScores.push({ score: player.highScore, username: player.username as string });
 		highScores.sort((a, b) => { return b.score - a.score });
 		highScores = highScores.slice(0, 20);
-		console.log(highScores);
-		highScoresDoc.set({ scores: highScores });
 	}
 	else if (player.highScore && highScorePlayerIndex !== -1) {
 		highScores[highScorePlayerIndex].score = player.highScore;
 		highScores.sort((a, b) => { return b.score - a.score });
-		highScoresDoc.set({ scores: highScores });
 	}
+	await saveHighScores(highScores);
 	return playersRef.doc(username).set(player, { merge: true });
 }
 

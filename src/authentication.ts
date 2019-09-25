@@ -52,7 +52,7 @@ export async function register(username: string, password: string) {
 	if (await Player.get(username))
 		throw "Username already exists";
 	let hashedPassword = await bcrypt.hash(password, 10);
-	let player = { username, highScore: 0, money: 0, upgradeLevel: [0, 0, 0, 0, 0, 0], lastLogin: Date.now(), password: hashedPassword };
+	let player = { username, highScore: 0, money: 0, upgradeLevel: [0, 0, 0, 0, 0, 0], lastLogin: Date.now(), password: hashedPassword, gamesPlayed: 0 };
 	return Player.save(username, player as any);
 }
 

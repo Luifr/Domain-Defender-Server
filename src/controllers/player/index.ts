@@ -1,4 +1,5 @@
 import * as Player from '../../model/player';
+import * as Stats from '../../model/stats'
 
 export async function savePlayer(req, res) {
 	let player = req.user as Player.IPlayer;
@@ -14,6 +15,8 @@ export async function savePlayer(req, res) {
 	if (money) {
 		player.money += money;
 	}
+	player.gamesPlayed++;
+	Stats.increaseGamesPlayed();
 	Player.save(player.username, player);
 	res.json(player);
 	return;
