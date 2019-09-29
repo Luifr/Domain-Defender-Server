@@ -16,12 +16,12 @@ export async function login(req: Request, res: Response) {
 }
 
 export async function register(req: Request, res: Response) {
-	if (!req.body.username || !req.body.password) {
-		res.status(400).json({ message: "Username and password are required" });
+	if (!req.body.username || !req.body.password || !req.body.email) {
+		res.status(400).json({ message: "Email, Username and password are required" });
 		return;
 	}
 	try {
-		await auth.register(req.body.username, req.body.password);
+		await auth.register(req.body.email, req.body.username, req.body.password);
 		let playerWithToken = await auth.sign(req.body.username, req.body.password);
 		res.status(200).json(playerWithToken);
 	}

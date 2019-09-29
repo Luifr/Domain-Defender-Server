@@ -15,12 +15,13 @@ let options = {
 
 let port = process.env.PORT || 443;
 
-import { verifyToken } from './authentication';
+import { verifyToken, requestOrigin } from './authentication';
 import router from './routes/index';
 
 app.use(express.urlencoded({ extended: false }));
 
 
+app.use(requestOrigin);
 app.use(verifyToken);
 
 app.use('/', router);
