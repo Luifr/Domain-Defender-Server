@@ -44,7 +44,6 @@ export async function save(username: string, player: Partial<IPlayer>): Promise<
 	if (player.highScore && highScorePlayerIndex == -1) {
 		highScores.push({ score: player.highScore, username: player.username as string });
 		highScores.sort((a, b) => { return b.score - a.score });
-		highScores = highScores.slice(0, 20);
 	}
 	else if (player.highScore && highScorePlayerIndex !== -1) {
 		highScores[highScorePlayerIndex].score = player.highScore;
