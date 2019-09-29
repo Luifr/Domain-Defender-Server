@@ -2,7 +2,18 @@ import express from 'express';
 const listEndpoints = require('express-list-endpoints')
 const app = express();
 
-let port = process.env.PORT || 3000;
+
+const https = require('https');
+const fs = require('fs');
+var key = fs.readFileSync('/etc/letsencrypt/live/bixoquest.icmc.usp.br/privkey.pem');
+var cert = fs.readFileSync('/etc/letsencrypt/live/bixoquest.icmc.usp.br/fullchain.pem');
+
+let options = {
+	key,
+	cert
+};
+
+let port = process.env.PORT || 443;
 
 import { verifyToken } from './authentication';
 import router from './routes/index';
@@ -14,7 +25,9 @@ app.use(verifyToken);
 
 app.use('/', router);
 
-app.listen(port, () => {
-	console.log(`🚀  listening on port ${port}!`);
+let server = https.createServer(options, app);
+
+server.listen(port, () => {
+console.log(`🚀  listening on ${port}!`);
 	console.log(listEndpoints(app));
 });
