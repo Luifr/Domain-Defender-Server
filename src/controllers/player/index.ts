@@ -17,6 +17,9 @@ export async function savePlayer(req, res) {
 		player.money += money;
 	}
 	if (hacks > 0) {
+		if(player.hacks == undefined){
+			player.hacks = 0;
+		}
 		player.hacks += hacks;
 	}
 	player.gamesPlayed++;

@@ -21,7 +21,6 @@ import router from './routes/index';
 
 app.use(express.urlencoded({ extended: false }));
 
-
 app.use(cors());
 app.use(requestOrigin);
 app.use(verifyToken);
