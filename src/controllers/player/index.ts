@@ -22,13 +22,17 @@ export async function savePlayer(req, res) {
 	player.gamesPlayed++;
 	Stats.increaseGamesPlayed();
 	Player.save(player.username, player);
-	res.json(player);
+	let p = { ...player };
+	delete p.hacks;
+	res.json(p);
 	return;
 }
 
 
 export async function getPlayer(req, res) {
-	res.json(req.user);
+	let p = { ...req.user };
+	delete p.hacks;
+	res.json(p);
 }
 
 export async function buyUpgrade(req, res) {
