@@ -22,7 +22,7 @@ export function requestOrigin(req, res, next) {
 }
 
 export function verifyToken(req, res, next) {
-	if (req.url == "/login" || req.url == "/register") {
+	if (/\/(?:(?:login)|(?:register)|(?:scores))\/?/.test(req.url)) {
 		next();
 		return;
 	}
@@ -65,6 +65,10 @@ export async function sign(username: string, password: string) {
 export async function register(email: string, username: string, password: string) {
 	if (await Player.get(username) || emails.indexOf(email) > -1)
 		throw "User already exists";
+	if (!/^\w+@\w+\.\w+$/.test(email)) {
+		throw "Invalid email";
+	}
+
 	emails.push(email);
 	let hashedPassword = await bcrypt.hash(password, 10);
 	let player = { email, username, highScore: 0, money: 0, upgradeLevel: [0, 0, 0, 0, 0, 0], lastLogin: Date.now(), password: hashedPassword, gamesPlayed: 0, hacks: 0 };
