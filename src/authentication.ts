@@ -38,7 +38,7 @@ export function verifyToken(req, res, next) {
 			}
 			// req.otherData = authData.otherData
 
-			req.user = await Player.get(authData.user.username);
+			req.user = await Player.get(authData.user.username, undefined, true);
 			if (!req.user)
 				res.status(403).json({ message: "Login problem" });
 			next();
@@ -67,7 +67,7 @@ export async function register(email: string, username: string, password: string
 		throw "User already exists";
 	emails.push(email);
 	let hashedPassword = await bcrypt.hash(password, 10);
-	let player = { email, username, highScore: 0, money: 0, upgradeLevel: [0, 0, 0, 0, 0, 0], lastLogin: Date.now(), password: hashedPassword, gamesPlayed: 0 };
+	let player = { email, username, highScore: 0, money: 0, upgradeLevel: [0, 0, 0, 0, 0, 0], lastLogin: Date.now(), password: hashedPassword, gamesPlayed: 0, hacks: 0 };
 	return Player.save(username, player as any);
 }
 

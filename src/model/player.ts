@@ -9,18 +9,22 @@ export interface IPlayer {
 	highScore: number;
 	lastLogin: number;
 	money: number;
+	hacks: number;
 	gamesPlayed: number;
 	upgradeLevel: [number, number, number, number, number, number];
 }
 
 let playersRef = firebase.collection('players');
 
-export async function get(username: string, password?: string): Promise<IPlayer | undefined> {
+export async function get(username: string, password?: string, getAll?: boolean): Promise<IPlayer | undefined> {
 	let playerDoc = await playersRef.doc(username).get();
 	if (playerDoc.exists) {
 		let player: IPlayer = playerDoc.data() as IPlayer;
 		let hashedPassword = (player as any).password;
-		delete (player as any).password;
+		if (!getAll) {
+			delete (player as any).password;
+			delete (player as any).hacks;
+		}
 		if (password) {
 			if (await bcrypt.compare(password, hashedPassword)) {
 				return player;
