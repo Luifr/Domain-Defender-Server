@@ -2,6 +2,7 @@ import express from 'express';
 const listEndpoints = require('express-list-endpoints')
 const app = express();
 
+import cors from 'cors';
 
 const https = require('https');
 const fs = require('fs');
@@ -21,8 +22,10 @@ import router from './routes/index';
 app.use(express.urlencoded({ extended: false }));
 
 
+app.use(cors());
 app.use(requestOrigin);
 app.use(verifyToken);
+
 
 app.use('/', router);
 
