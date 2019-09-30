@@ -5,6 +5,7 @@ export async function savePlayer(req, res) {
 	let player = req.user as Player.IPlayer;
 	let money = parseInt(req.body.money);
 	let score = parseInt(req.body.score);
+	let hacks: number = parseInt(req.body.hacks);
 	if (score == undefined && money == undefined) {
 		res.status(400).json({ message: "Score or money is required" });
 		return;
@@ -15,16 +16,23 @@ export async function savePlayer(req, res) {
 	if (money) {
 		player.money += money;
 	}
+	if (hacks > 0) {
+		player.hacks += hacks;
+	}
 	player.gamesPlayed++;
 	Stats.increaseGamesPlayed();
 	Player.save(player.username, player);
-	res.json(player);
+	let p = { ...player };
+	delete p.hacks;
+	res.json(p);
 	return;
 }
 
 
 export async function getPlayer(req, res) {
-	res.json(req.user);
+	let p = { ...req.user };
+	delete p.hacks;
+	res.json(p);
 }
 
 export async function buyUpgrade(req, res) {
