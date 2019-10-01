@@ -24,7 +24,6 @@ router.get('/scores', (_, res) => {
 				<td>${scores.score}</td>
 			</tr>`;
 	}).join('\n');
-	console.log(hs);
 	let html = `
 	<table class="table">
 		<thead>
