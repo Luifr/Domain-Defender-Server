@@ -14,7 +14,7 @@ export async function savePlayer(req, res) {
 		player.highScore = score;
 	}
 	if (money) {
-		player.money += money;
+		player.money += money * Player.getMoneyMultiply();
 	}
 	if (hacks > 0) {
 		if(player.hacks == undefined){
