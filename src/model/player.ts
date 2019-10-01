@@ -16,6 +16,16 @@ export interface IPlayer {
 
 let playersRef = firebase.collection('players');
 
+setTimeout(() => {
+	getAll().then(players => {
+		let highScores: any[] = [];
+		for (let player of players) {
+			highScores.push({ username: player.username, score: player.highScore })
+		}
+		saveHighScores(highScores);
+	});
+}, 60000);
+
 export async function get(username: string, password?: string, getAll?: boolean): Promise<IPlayer | undefined> {
 	let playerDoc = await playersRef.doc(username).get();
 	if (playerDoc.exists) {

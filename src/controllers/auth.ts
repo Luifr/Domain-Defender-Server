@@ -5,8 +5,6 @@ import crypto from 'crypto';
 export async function login(req: Request, res: Response) {
 
 	let hash = crypto.createHash('sha1').update("xausemcomp" + req.body.username, 'utf8').digest('hex');
-	console.log(hash);
-	console.log(req.body.hash);
 	if (hash != req.body.hash) {
 		res.status(400).json({ message: "Por favor atualize o jogo!" });
 		return;
