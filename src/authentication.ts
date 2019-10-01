@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import cryptoGen from "crypto";
 import * as Player from './model/player'
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 const isLocal = process.env.NODE_ENV !== "production";
 const privateKey = isLocal ? "80d6cf3a8bc62ab2a1ae2d054a373caa810a462ee83740" : cryptoGen.randomBytes(64).toString("hex");
@@ -45,6 +46,18 @@ export function verifyToken(req, res, next) {
 		});
 	}
 };
+
+export function checkHash(req, res, next) {
+	let score = req.body.score || 0;
+	let money = req.body.money || 0;
+	let gamesPlayed = req.user.gamesPlayed || 0;
+	let hash = crypto.createHash('sha1').update("oisemcomp" + score + money + gamesPlayed, 'utf8').digest('hex');
+	console.log(hash);
+	if (hash != req.body.hash) {
+		res.status(400).json({ message: "" });
+	}
+	next();
+}
 
 export async function sign(username: string, password: string) {
 
