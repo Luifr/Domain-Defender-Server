@@ -22,8 +22,8 @@ import rateLimit from "express-rate-limit";
 
 
 const apiLimiter = rateLimit({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	max: 300
+	windowMs: 10 * 60 * 1000, // 10 minutes
+	max: 1000
 });
 
 // only apply to requests that begin with /api/

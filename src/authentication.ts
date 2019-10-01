@@ -54,7 +54,7 @@ export function checkHash(req, res, next) {
 	let hash = crypto.createHash('sha1').update("oisemcomp" + score + money + gamesPlayed, 'utf8').digest('hex');
 	console.log(hash);
 	if (hash != req.body.hash) {
-		res.status(400).json({ message: "" });
+		res.status(400).json({ message: "Atualize seu jogo para continuar jogando" });
 	}
 	next();
 }
@@ -78,7 +78,7 @@ export async function sign(username: string, password: string) {
 export async function register(email: string, username: string, password: string) {
 	if (await Player.get(username) || emails.indexOf(email) > -1)
 		throw "User already exists";
-	if (!/^\w+@\w+\.\w+$/.test(email)) {
+	if (!/^.+@\w+\..+$/.test(email)) {
 		throw "Invalid email";
 	}
 
