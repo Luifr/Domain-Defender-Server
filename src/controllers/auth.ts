@@ -1,7 +1,18 @@
 import * as auth from '../authentication';
 import { Request, Response } from 'express';
+import crypto from 'crypto';
 
 export async function login(req: Request, res: Response) {
+
+	let hash = crypto.createHash('sha1').update("xausemcomp" + req.body.username, 'utf8').digest('hex');
+	console.log(hash);
+	console.log(req.body.hash);
+	if (hash != req.body.hash) {
+		res.status(400).json({ message: "Por favor atualize o jogo!" });
+		return;
+	}
+
+
 	if (!req.body.username || !req.body.password) {
 		res.status(401).json({ message: "Username and password are required" });
 		return;
