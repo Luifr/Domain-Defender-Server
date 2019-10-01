@@ -15,14 +15,19 @@ export interface IPlayer {
 }
 
 let playersRef = firebase.collection('players');
+let globalConfigDoc = firebase.collection('configs').doc('global');
+let moneyMultiply = 1;
 
-setTimeout(() => {
+setInterval(() => {
 	getAll().then(players => {
 		let highScores: any[] = [];
 		for (let player of players) {
 			highScores.push({ username: player.username, score: player.highScore })
 		}
 		saveHighScores(highScores);
+	});
+	globalConfigDoc.get().then(doc => {
+		moneyMultiply = (doc.data() as any).moneyMultiply;
 	});
 }, 60000);
 
@@ -89,4 +94,8 @@ export async function buyUpgrade(player: IPlayer, upgradeIndex: string): Promise
 		return player;
 	}
 	throw "Not enough money";
+}
+
+export function getMoneyMultiply(): number {
+	return moneyMultiply;
 }
