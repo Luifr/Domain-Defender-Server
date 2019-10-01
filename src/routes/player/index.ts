@@ -1,9 +1,10 @@
 import express from 'express';
 const router = express.Router();
+import { checkHash } from '../../authentication'
 
 import * as controller from '../../controllers/player/index'
 
-router.post('/', controller.savePlayer);
+router.post('/', checkHash, controller.savePlayer);
 
 router.get('/', controller.getPlayer);
 
