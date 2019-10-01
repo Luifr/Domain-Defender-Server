@@ -78,7 +78,7 @@ export async function sign(username: string, password: string) {
 export async function register(email: string, username: string, password: string) {
 	if (await Player.get(username) || emails.indexOf(email) > -1)
 		throw "User already exists";
-	if (!/^\w+@\w+\.\w+$/.test(email)) {
+	if (!/^\w+@\w+\..+$/.test(email)) {
 		throw "Invalid email";
 	}
 
