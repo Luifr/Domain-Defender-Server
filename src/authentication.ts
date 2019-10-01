@@ -54,7 +54,9 @@ export function checkHash(req, res, next) {
 	let hash = crypto.createHash('sha1').update("oisemcomp" + score + money + gamesPlayed, 'utf8').digest('hex');
 	console.log(hash);
 	if (hash != req.body.hash) {
-		res.status(400).json({ message: "Atualize seu jogo para continuar jogando" });
+		res.status(200).json({ message: "Atualize seu jogo para continuar jogando" }
+		);
+		return;
 	}
 	next();
 }
