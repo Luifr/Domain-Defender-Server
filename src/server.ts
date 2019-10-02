@@ -26,7 +26,7 @@ app.use(verifyToken);
 
 app.use('/', router);
 
-if (process.env.NODE_ENV == "production") {
+if (process.env.NODE_ENV == "production" || port == 443) {
 
 	let key = fs.readFileSync('/etc/letsencrypt/live/bixoquest.icmc.usp.br/privkey.pem');
 	let cert = fs.readFileSync('/etc/letsencrypt/live/bixoquest.icmc.usp.br/fullchain.pem');
