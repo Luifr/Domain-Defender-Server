@@ -18,6 +18,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node javascript/index.js",
+    "starthttps": "NODE_ENV='production' node javascript/index.js",
+    "starthttp": "node javascript/index.js",
     "prod": "NODE_ENV='production' node javascript/index.js"
   },
   "keywords": [],

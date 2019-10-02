@@ -25,13 +25,16 @@ export async function login(req: Request, res: Response) {
 }
 
 export async function register(req: Request, res: Response) {
-	if (!req.body.username || !req.body.password || !req.body.email) {
+	if (!req.body.username || !req.body.password || !req.body.email || req.body.username == "") {
 		res.status(400).json({ message: "Email, Username and password are required" });
 		return;
 	}
 	try {
-		await auth.register(req.body.email, req.body.username, req.body.password);
-		let playerWithToken = await auth.sign(req.body.username, req.body.password);
+		let email = req.body.email.trim();
+		let username = req.body.username.trim();
+		let password = req.body.password.trim();
+		await auth.register(email, username, password);
+		let playerWithToken = await auth.sign(username, password);
 		res.status(200).json(playerWithToken);
 	}
 	catch (error) {

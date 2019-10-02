@@ -38,7 +38,7 @@ export function getHighScores() {
 }
 
 export async function saveHighScores(highScores: any[]) {
-	return highScoresDoc.set({ scores: highScores });
+	return highScoresDoc.set({ scores: highScores }, { merge: false });
 }
 
 export async function increaseGamesPlayed() {
