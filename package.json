@@ -6,12 +6,13 @@
   "dependencies": {
     "@types/bcrypt": "^3.0.0",
     "@types/express": "^4.17.1",
+    "@types/nedb": "^1.8.9",
     "bcrypt": "^3.0.6",
     "express": "^4.17.1",
     "express-list-endpoints": "^4.0.1",
     "express-rate-limit": "^5.0.0",
-    "firebase-admin": "^8.4.0",
-    "jsonwebtoken": "^8.5.1"
+    "jsonwebtoken": "^8.5.1",
+    "nedb": "^1.8.0"
   },
   "devDependencies": {},
   "scripts": {

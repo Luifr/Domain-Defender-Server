@@ -1,28 +1,20 @@
-import firebase from '../dbManager';
+import db from '../dbManager';
 
 export interface IUpgrade {
 	cost: number[];
 	value: number[];
 }
 
-let upgradeRef = firebase.collection('upgrades');
-
 export async function getAll(): Promise<IUpgrade[]> {
-	let docs = await upgradeRef.get();
-	return docs.docs.map(doc => doc.data() as IUpgrade);
+	return db.upgrades.findAllAsync();
 }
 
 export async function get(upgrade: string): Promise<IUpgrade> {
 	if (+upgrade < 0 || +upgrade > 5)
 		throw "Upgrade does not exists";
-
-	let data = await upgradeRef.doc(upgrade.toString()).get();
-	if (data.exists) {
-		return data.data() as IUpgrade;
-	}
-	throw "Error fetching upgrade";
+	return db.upgrades.findOneAsync({ index: upgrade });
 }
 
 export async function save(upgradeIndex: string, upgrade: Partial<IUpgrade>): Promise<any> {
-	upgradeRef.doc(upgradeIndex).set(upgrade, { merge: true });
+	db.upgrades.update({ index: upgradeIndex }, { $set: { ...upgrade } })
 }

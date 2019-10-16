@@ -1,9 +1,15 @@
-import firebase from '../dbManager';
+import db from '../dbManager';
 
-let statsRef = firebase.collection('stats');
+let gamesPlayedDoc;
+let highScoresDoc;
 
-let gamesPlayedDoc = statsRef.doc('gamesPlayed');
-let highScoresDoc = statsRef.doc('highScores');
+db.stats.findOneAsync({ name: "gamesPlayed" }).then(data => {
+	gamesPlayedDoc = data.value;
+	gamesPlayedDoc.total = gamesPlayedDoc.total || 0;
+});
+db.stats.findOneAsync({ name: "highScores" }).then(data => {
+	highScoresDoc = data.value;
+});
 
 let date = new Date();
 
@@ -17,34 +23,20 @@ setInterval(updateDay, 1800000);
 updateDay();
 console.log(dateString);
 
-let gamesPlayed;
-gamesPlayedDoc.get().then(doc => {
-	let data = doc.data() as any;
-	gamesPlayed = data as any[];
-	if (!gamesPlayed) {
-		gamesPlayed = { total: 0 }
-	}
-});
-
-
-let highScores: { score: number, username: string }[];
-highScoresDoc.get().then(doc => {
-	let data = doc.data() as any;
-	highScores = data.scores as any[];
-});
 
 export function getHighScores() {
-	return highScores;
+	return highScoresDoc;
 }
 
 export async function saveHighScores(highScores: any[]) {
-	return highScoresDoc.set({ scores: highScores });
+	return db.stats.update({ "name": "highScores" }, { $set: highScores });
 }
 
 export async function increaseGamesPlayed() {
-	gamesPlayed.total++;
-	if (!gamesPlayed[dateString])
-		gamesPlayed[dateString] = 0;
-	gamesPlayed[dateString]++;
-	gamesPlayedDoc.set(gamesPlayed);
+	gamesPlayedDoc.total++;
+	if (!gamesPlayedDoc[dateString])
+		gamesPlayedDoc[dateString] = 0;
+	gamesPlayedDoc[dateString]++;
+	db.stats.update({ name: "gamesPlayed" }, { $set: { ...gamesPlayedDoc } })
 }
+

@@ -1,4 +1,4 @@
-import firebase from '../dbManager';
+import db from '../dbManager';
 import * as Upgrade from '../model/upgrade';
 import bcrypt from 'bcrypt';
 import { getHighScores, saveHighScores } from './stats';
@@ -14,11 +14,9 @@ export interface IPlayer {
 	upgradeLevel: [number, number, number, number, number, number];
 }
 
-let playersRef = firebase.collection('players');
-let globalConfigDoc = firebase.collection('configs').doc('global');
 let moneyMultiply = 1;
 
-setInterval(() => {
+setInterval(async () => {
 	getAll().then(players => {
 		let highScores: any[] = [];
 		for (let player of players) {
@@ -26,34 +24,27 @@ setInterval(() => {
 		}
 		saveHighScores(highScores);
 	});
-	globalConfigDoc.get().then(doc => {
-		moneyMultiply = (doc.data() as any).moneyMultiply;
-	});
+	moneyMultiply = (await db.configs.findOneAsync({ name: "moneyMultiply" })).value;
 }, 60000);
 
 export async function get(username: string, password?: string, getAll?: boolean): Promise<IPlayer | undefined> {
-	let playerDoc = await playersRef.doc(username).get();
-	if (playerDoc.exists) {
-		let player: IPlayer = playerDoc.data() as IPlayer;
-		let hashedPassword = (player as any).password;
-		if (!getAll) {
-			delete (player as any).password;
-			delete (player as any).hacks;
-		}
-		if (password) {
-			if (await bcrypt.compare(password, hashedPassword)) {
-				return player;
-			}
-			else {
-				throw ("Invalid username/password combination");
-			}
+	let player: IPlayer = await db.players.findOneAsync({ username });
+
+	let hashedPassword = (player as any).password;
+	if (!getAll) {
+		delete (player as any).password;
+		delete (player as any).hacks;
+	}
+	if (password) {
+		if (await bcrypt.compare(password, hashedPassword)) {
+			return player;
 		}
 		else {
-			return player;
+			throw ("Invalid username/password combination");
 		}
 	}
 	else {
-		return undefined;
+		return player;
 	}
 }
 
@@ -69,16 +60,11 @@ export async function save(username: string, player: Partial<IPlayer>): Promise<
 		highScores.sort((a, b) => { return b.score - a.score });
 	}
 	await saveHighScores(highScores);
-	return playersRef.doc(username).set(player, { merge: true });
+	return db.players.update({ username }, { $set: { ...player } });
 }
 
 export async function getAll(): Promise<IPlayer[]> {
-	let playerDocs = await playersRef.get();
-	let players: IPlayer[] = [];
-	for (let doc of playerDocs.docs) {
-		let player = doc.data() as IPlayer;
-		players.push(player);
-	}
+	let players = await db.players.findAllAsync();
 	return players;
 }
 
