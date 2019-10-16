@@ -55,19 +55,19 @@ export async function savePlayer(req, res) {
 		res.json(p);
 		return;
 	}
+}
 
+export async function getPlayer(req, res) {
+	let p = { ...req.user };
+	delete p.hacks;
+	res.json(p);
+}
 
-	export async function getPlayer(req, res) {
-		let p = { ...req.user };
-		delete p.hacks;
-		res.json(p);
+export async function buyUpgrade(req, res) {
+	try {
+		res.json(await Player.buyUpgrade(req.user, req.body.upgrade));
 	}
-
-	export async function buyUpgrade(req, res) {
-		try {
-			res.json(await Player.buyUpgrade(req.user, req.body.upgrade));
-		}
-		catch (error) {
-			res.status(201).json({ message: error });
-		}
+	catch (error) {
+		res.status(201).json({ message: error });
 	}
+}
