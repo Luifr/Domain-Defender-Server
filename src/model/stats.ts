@@ -29,7 +29,7 @@ export function getHighScores() {
 }
 
 export async function saveHighScores(highScores: any[]) {
-	return db.stats.update({ "name": "highScores" }, { $set: highScores });
+	return db.stats.update({ "name": "highScores" }, { $set: { value: highScores } });
 }
 
 export async function increaseGamesPlayed() {

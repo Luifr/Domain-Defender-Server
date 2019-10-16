@@ -22,6 +22,7 @@ setInterval(async () => {
 		for (let player of players) {
 			highScores.push({ username: player.username, score: player.highScore })
 		}
+		highScores.sort((a, b) => { return b.score - a.score });
 		saveHighScores(highScores);
 	});
 	moneyMultiply = (await db.configs.findOneAsync({ name: "moneyMultiply" })).value;

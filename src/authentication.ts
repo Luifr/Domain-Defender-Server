@@ -4,7 +4,7 @@ import * as Player from './model/player'
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 
-const isLocal = process.env.NODE_ENV !== "production";
+const isLocal = true || process.env.NODE_ENV !== "production";
 const privateKey = isLocal ? "80d6cf3a8bc62ab2a1ae2d054a373caa810a462ee83740" : cryptoGen.randomBytes(64).toString("hex");
 
 let emails: string[];
@@ -53,7 +53,9 @@ export function checkHash(req, res, next) {
 	let gamesPlayed = req.user.gamesPlayed || 0;
 	let hash = crypto.createHash('sha1').update("oisemcomp" + score + money + gamesPlayed, 'utf8').digest('hex');
 	if (hash != req.body.hash) {
-		res.status(400).json({ message: "" });
+		res.status(200).json({ message: "Atualize seu jogo para continuar jogando" }
+		);
+		return;
 	}
 	next();
 }
@@ -77,7 +79,7 @@ export async function sign(username: string, password: string) {
 export async function register(email: string, username: string, password: string) {
 	if (await Player.get(username) || emails.indexOf(email) > -1)
 		throw "User already exists";
-	if (!/^\w+@\w+\..+$/.test(email)) {
+	if (!/^.+@\w+\..+$/.test(email)) {
 		throw "Invalid email";
 	}
 
