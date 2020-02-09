@@ -14,20 +14,20 @@ export async function savePlayer(req, res) {
 	let score = parseInt(req.body.score);
 	let hacks: number = parseInt(req.body.hacks);
 
-	if (!req.body.levels || !req.body.upgrades) {
-		res.status(201).json({ message: updateMessage });
-		return;
-	}
-	if (JSON.stringify(req.body.levels.upgradeLevel) != JSON.stringify(player.upgradeLevel)) {
-		res.status(201).json({ message: updateMessage })
-		return;
-	}
-	for (let index = 0; index < upgrades.length; index++) {
-		if (JSON.stringify(req.body.upgrades[index].value) != JSON.stringify(upgrades[index].value)) {
-			res.status(201).json({ message: updateMessage })
-			return;
-		}
-	}
+	// if (!req.body.levels || !req.body.upgrades) {
+	// 	res.status(201).json({ message: updateMessage });
+	// 	return;
+	// }
+	// if (JSON.stringify(req.body.levels.upgradeLevel) != JSON.stringify(player.upgradeLevel)) {
+	// 	res.status(201).json({ message: updateMessage })
+	// 	return;
+	// }
+	// for (let index = 0; index < upgrades.length; index++) {
+	// 	if (JSON.stringify(req.body.upgrades[index].value) != JSON.stringify(upgrades[index].value)) {
+	// 		res.status(201).json({ message: updateMessage })
+	// 		return;
+	// 	}
+	// }
 
 	if (req.body.upgrades) {
 		req.body.upgrades

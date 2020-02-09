@@ -17,6 +17,8 @@ const apiLimiter = rateLimit({
 	max: 1000
 });
 
+// import * as U from './model/upgrade';
+// U.getAll().then(data => console.log(data));
 
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
